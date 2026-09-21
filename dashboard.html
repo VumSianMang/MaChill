@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MaChill — dashboard</title>
+<link rel="icon" type="image/png" href="assets/icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="dash">
+  <div class="dash-header">
+    <img class="dash-wordmark" src="assets/logo-mark.png" alt="MaChill" />
+    <div class="dash-account">
+      <img id="account-photo" src="" alt="" />
+      <span id="account-name">…</span>
+      <span class="my-id" id="account-id" title="Your MaChill ID — share it so people can find you">···</span>
+      <button class="btn-quiet" data-sign-out>Sign out</button>
+    </div>
+  </div>
+
+  <div class="dash-content">
+    <section class="panel">
+      <h2>Start a new group</h2>
+      <span class="panel-sub">Name it, add a few people, and you'll get a saved chat plus a watch session you can start together anytime.</span>
+
+      <input class="field" id="group-name-input" placeholder="Group name — e.g. Movie Night" />
+
+      <div class="search-box" style="margin-top:14px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="field" id="people-search-input" placeholder="Search people by name or MaChill ID" autocomplete="off" />
+      </div>
+      <div class="people-results" id="people-results"></div>
+      <div class="chip-row" id="selected-chips"></div>
+
+      <button class="btn btn-glow" id="create-group-btn" style="margin-top:20px;width:100%;justify-content:center;">Create group</button>
+    </section>
+
+    <section class="panel">
+      <h2>Your groups</h2>
+      <span class="panel-sub">Tap one to open its chat and start a watch session.</span>
+      <div class="groups-grid" id="groups-grid"></div>
+      <p class="empty-state" id="groups-empty" hidden>No groups yet — create one above, or open an invite link someone sent you.</p>
+    </section>
+  </div>
+</div>
+
+<script type="module" src="js/auth.js"></script>
+<script type="module" src="js/dashboard.js"></script>
+</body>
+</html>

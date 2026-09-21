@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MaChill — group</title>
+<link rel="icon" type="image/png" href="assets/icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ===================== top bar ===================== -->
+  <header class="app-topbar">
+    <button class="icon-btn back-btn" id="back-btn" title="Back to dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    </button>
+    <div class="group-identity">
+      <span class="g-avatar" id="group-avatar">··</span>
+      <div>
+        <div class="group-name" id="group-name-text">Loading…</div>
+        <div class="group-meta" id="group-meta-text"></div>
+      </div>
+    </div>
+    <div class="app-topbar-spacer"></div>
+    <button class="icon-btn" id="invite-btn" title="Invite people">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1-1"/></svg>
+    </button>
+  </header>
+
+  <!-- ===================== body ===================== -->
+  <div class="app-body" id="group-body">
+    <main class="app-main" id="watch-main" hidden>
+
+      <div class="call-strip" id="call-strip"></div>
+
+      <div class="mode-panel" id="mode-panel-youtube" hidden>
+        <input class="field" id="youtube-url-input" placeholder="Paste a YouTube link or video ID" />
+        <button class="btn btn-ghost" id="youtube-load-btn">Load for everyone</button>
+        <span class="hint">Anyone can paste a link — play, pause, and seek stay in sync for the whole group.</span>
+      </div>
+
+      <div class="mode-panel" id="mode-panel-local" hidden>
+        <button class="btn btn-ghost" id="local-file-btn">Choose movie file on this device</button>
+        <span class="hint" id="local-hint">Nothing is uploaded — the file stays on your device. If everyone opens the same file (same name), MaChill keeps play position, pause, and seeking in sync using tiny timestamp pings — no streaming, no data used by the video itself.</span>
+      </div>
+
+      <div class="mode-panel" id="mode-panel-drive" hidden>
+        <input class="field" id="drive-link-input" placeholder="Paste a Google Drive share link for the movie" />
+        <button class="btn btn-ghost" id="drive-share-btn">Share with group</button>
+        <span class="hint" id="drive-hint">Set the file's Drive sharing to "Anyone with the link — Viewer" first. Whoever shares it downloads it now; everyone else gets their own full-quality copy straight from Drive.</span>
+        <div id="drive-file-list"></div>
+      </div>
+
+      <div class="mode-panel" id="mode-panel-screen" hidden>
+        <span class="hint">Live screen share — nothing to load. Works on any site, since nothing needs to be embedded.</span>
+      </div>
+
+      <div class="stage-wrap">
+        <div class="stage" id="stage">
+          <div class="stage-empty" id="stage-empty">
+            <h3>Nothing playing yet</h3>
+            <p>Tap the <strong>+</strong> button below to pick YouTube, a local movie, a Drive movie, or a screen share.</p>
+          </div>
+          <div id="yt-player" style="width:100%;height:100%;display:none;"></div>
+          <video id="local-video" style="display:none;" playsinline></video>
+          <video id="drive-video" style="display:none;" playsinline></video>
+          <video id="screen-video" style="display:none;" playsinline autoplay muted></video>
+
+          <div class="presenter-tag" id="presenter-tag" hidden>
+            <span class="g-avatar" id="presenter-avatar"></span>
+            <span id="presenter-name"></span>
+          </div>
+
+          <div class="stage-sync-bar" id="stage-sync-bar">
+            <span class="dot"></span>
+            <span id="sync-status-text">Synced with the group</span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- chat: full main view until a watch session starts, then a side drawer -->
+    <aside class="chat-panel mode-full" id="chat-panel">
+      <div class="chat-head">
+        <h3>Chat</h3>
+        <button class="icon-btn chat-close-btn" id="chat-close-btn" title="Close chat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="chat-log" id="chat-log"></div>
+      <div class="chat-compose">
+        <button class="emoji-toggle" id="emoji-toggle-btn" title="Emoji">🙂</button>
+        <input id="chat-input" placeholder="Say something…" maxlength="500" autocomplete="off" />
+        <button class="chat-send" id="chat-send-btn" title="Send">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+        </button>
+        <div class="emoji-picker" id="emoji-picker" hidden></div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ===================== bottom call bar ===================== -->
+  <footer class="call-bar" id="call-bar">
+    <div class="start-prompt">
+      <button class="btn btn-glow" id="start-session-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        Start watch session
+      </button>
+    </div>
+
+    <div class="active-controls">
+      <button class="icon-btn is-on-glow" id="mic-btn" title="Mute / unmute">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+      </button>
+      <button class="icon-btn is-on-glow" id="cam-btn" title="Camera on / off">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      </button>
+
+      <div class="divider"></div>
+
+      <button class="icon-btn is-on-glow" id="share-menu-btn" title="Share something">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+
+      <div class="divider"></div>
+
+      <button class="icon-btn" id="toggle-tiles-btn" title="Hide / show video tiles">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      </button>
+      <button class="icon-btn chat-toggle-btn" id="chat-toggle-btn" title="Hide / show chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.4 8.5 8.5 0 0 1-4-1L3 20l1.1-5.5A8.38 8.38 0 0 1 4 12.5 8.5 8.5 1 1 1 21 11.5z"/></svg>
+      </button>
+
+      <div class="divider"></div>
+
+      <button class="icon-btn is-off" id="leave-session-btn" title="Leave watch session">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 0 8"/><path d="M3 10v4a1 1 0 0 0 1 1h3l4 4V5L7 9H4a1 1 0 0 0-1 1z"/><line x1="21" y1="3" x2="3" y2="21" stroke="var(--danger)"/></svg>
+      </button>
+    </div>
+
+    <div class="share-menu" id="share-menu" hidden>
+      <button type="button" data-mode="screen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <span>Web together<br/>(screen share)</span>
+      </button>
+      <button type="button" data-mode="drive">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2l6 10-4 8H2l4-8z"/><path d="M22 20h-8l4-8h4z"/><path d="M12 2l4 8-4 8"/></svg>
+        <span>Google Drive</span>
+      </button>
+      <button type="button" data-mode="local">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><polygon points="10 12 15 15 10 18 10 12"/></svg>
+        <span>Local video</span>
+      </button>
+      <button type="button" data-mode="youtube">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"/><polygon points="10 9 16 12 10 15 10 9" fill="currentColor" stroke="none"/></svg>
+        <span>YouTube</span>
+      </button>
+    </div>
+  </footer>
+</div>
+
+<!-- ===================== invite modal ===================== -->
+<div class="modal-overlay" id="invite-modal" hidden>
+  <div class="modal">
+    <h3>Invite to <span id="invite-group-name">this group</span></h3>
+    <p class="modal-sub">Anyone who opens this link (or scans the code) joins instantly.</p>
+    <div id="invite-qr"></div>
+    <div class="invite-link-row">
+      <input class="field" id="invite-link-input" readonly />
+      <button class="btn btn-ghost" id="copy-invite-btn">Copy</button>
+    </div>
+    <button class="btn-quiet" id="close-invite-btn">Close</button>
+  </div>
+</div>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script type="module" src="js/auth.js"></script>
+<script type="module" src="js/group.js"></script>
+</body>
+</html>
